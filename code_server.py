@@ -7,11 +7,15 @@
 '''
 import os
 import md5
-import random
 import time
+import random
+import traceback
 from collections import defaultdict
+
 from bottle import run, post, request
 from PIL import Image
+
+from main.util import buildvector
 
 code_template_dic = {
     1:{},
@@ -19,14 +23,6 @@ code_template_dic = {
     }
 
 curpath = os.path.dirname(__file__)
-
-def buildvector(im):
-    d1 = {}
-    count = 0
-    for i in im.getdata():
-        d1[count] = i
-        count += 1
-    return d1
 
 def load_template(path):
     template_dic = defaultdict(list)
@@ -48,7 +44,6 @@ def load_all():
         code_template_dic.update({
             code_typ:template_dic
             })
-        #break
     return
 
 #加载模版
@@ -58,7 +53,8 @@ load_all()
 def code_verify_out():
     try:
         code = code_verify(request)
-    except:
+    except Exception as e:
+        print traceback.format_exc()
         code = 'ERROR'
     return code
 
@@ -83,7 +79,7 @@ def code_verify(request):
     if hasattr(img, 'close'):
         img.close()
     try:
-        os.remove(filename)
+        print os.remove(filename)
     except Exception as e:
         print u"删除图片失败 %s"%e
     return code

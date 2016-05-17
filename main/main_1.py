@@ -10,34 +10,10 @@ import hashlib
 import shutil
 from PIL import Image
 from collections import Counter, defaultdict
+from util import VectorCompare, buildvector
 
 #模版
 global_template_dic = defaultdict(list)
-
-class VectorCompare(object):
-    #计算矢量大小
-    def magnitude(self,concordance):
-        total = 0
-        for word,count in concordance.iteritems():
-            total += count ** 2
-        return math.sqrt(total)
-
-    #计算矢量之间的 cos 值
-    def relation(self,concordance1, concordance2):
-        relevance = 0
-        topvalue = 0
-        for word, count in concordance1.iteritems():
-            if concordance2.has_key(word):
-                topvalue += count * concordance2[word]
-        return topvalue / (self.magnitude(concordance1) * self.magnitude(concordance2))
-
-def buildvector(im):
-    d1 = {}
-    count = 0
-    for i in im.getdata():
-        d1[count] = i
-        count += 1
-    return d1
 
 def clear_image(img):
     u'''去噪'''
@@ -187,7 +163,7 @@ def load_template():
     return template_dic
 
 def verify(image, template_dic=load_template()):
-    image = clear_image(image)    
+    image = clear_image(image)
     image_split_list = split_image_with_width(image)
     code = []
     for image in image_split_list:
